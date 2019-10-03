@@ -1,0 +1,21 @@
+#!/usr/bin/php
+<?php
+require_once __DIR__.'/vendor/autoload.php';
+require_once __DIR__.'/autoload.php';
+
+// run console tests
+$errMsg = 'no tests specified';
+
+if(empty($argv[1]))
+{
+	die($errMsg);
+}
+
+switch($argv[1])
+{
+	case '1':
+		require_once 'tests/book.php';
+		break;
+	default:
+		echo $errMsg;
+}

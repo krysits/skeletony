@@ -1,0 +1,23 @@
+{
+  "name": "krysits/skeletony",
+  "type": "library",
+  "license": "GPL v3.0",
+  "description": "A framework for data models in PHP7.",
+  "keywords": ["php7", "mysql", "postgresql", "models"],
+  "require": {
+	"php": ">=7.0"
+  },
+  "homepage": "https://github.com/krysits/skeletony",
+  "authors": [
+	{
+	  "name": "Kristaps Ledins",
+	  "email": "krysits@gmail.com"
+	}
+  ],
+  "autoload": {
+	"psr-0": {
+	  "Krysits": "src",
+	  "Krysits\\Tests": "tests"
+	}
+  }
+}

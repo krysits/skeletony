@@ -216,6 +216,26 @@ class Model {
 
 		return $result;
 	}
+	
+	public function deleteHard($id)
+	{
+		if(!$this->setId($id)) {
+			return false;
+		}
+		
+		$sql = "DELETE FROM ";
+		$sql .= $this->_table;
+		echo $sql .= " WHERE id = " . intval($id);
+		
+		$stmt = $this->_db->prepare($sql);
+		$result = $stmt->execute();
+		
+		if(!$result) {
+			$this->getError($stmt);
+		}
+		
+		return $result;
+	}
 
 	public function getRecord($id, $key = 'id')
 	{

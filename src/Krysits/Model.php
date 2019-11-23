@@ -243,9 +243,16 @@ class Model {
 	public function getRecords($filters = [], $selection = [], $limit = 100, $skip = 0) {
 
 		$sql = "SELECT ".((empty($selection))?"*":implode(", ",$selection))." FROM ".$this->_table;
-
+		
 		$limitSql = '';
-		if($limit || $skip)	$limitSql = " OFFSET ".$skip." LIMIT ".$limit;
+		if($limit || $skip)	{
+			if((new Config)->type == 'pgsql') {
+				$limitSql = " OFFSET ".$skip." LIMIT ".$limit;
+			}
+			else {
+				$limitSql = " LIMIT ".$skip.", ".$limit;
+			}
+		}
 
 		if(!empty($filters)){
 

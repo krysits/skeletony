@@ -225,7 +225,7 @@ class Model {
 		
 		$sql = "DELETE FROM ";
 		$sql .= $this->_table;
-		echo $sql .= " WHERE id = " . intval($id);
+		$sql .= " WHERE id = " . intval($id);
 		
 		$stmt = $this->_db->prepare($sql);
 		$result = $stmt->execute();

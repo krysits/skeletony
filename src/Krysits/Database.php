@@ -15,7 +15,7 @@ class Database {
 				self::$config->getDSN(),
 				self::$config->env('DB_USERNAME','postgres'),
 				self::$config->env('DB_PASSWORD'),
-				[PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8'"]
+				[PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8mb4'"]
 			);
 		}
 

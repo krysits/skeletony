@@ -276,7 +276,7 @@ class Model {
 
 		if(!empty($filters)){
 
-			$vars = get_object_vars($this);
+			$vars = get_class_vars(get_called_class());
 			$whereSql = [];
 
 			foreach ($filters as $key => $value){

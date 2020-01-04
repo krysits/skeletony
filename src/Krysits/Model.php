@@ -278,9 +278,11 @@ class Model {
 
 			$vars = get_class_vars(get_called_class());
 			$whereSql = [];
-
+			
 			foreach ($filters as $key => $value){
-				if(in_array($key, array_keys($vars))) $whereSql[] = $key." = :".$key." ";
+				if(in_array($key, array_keys($vars))) {
+					$whereSql[] = $key." = :".$key." ";
+				}
 			}
 
 			$sql .= " WHERE ".implode(" AND ", $whereSql);

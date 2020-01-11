@@ -216,25 +216,36 @@ class Model {
 
 		return $result;
 	}
-	
+
 	public function deleteHard($id)
 	{
 		if(!$this->setId($id)) {
 			return false;
 		}
-		
+
 		$sql = "DELETE FROM ";
 		$sql .= $this->_table;
 		$sql .= " WHERE id = " . intval($id);
-		
+
 		$stmt = $this->_db->prepare($sql);
 		$result = $stmt->execute();
-		
+
 		if(!$result) {
 			$this->getError($stmt);
 		}
-		
+
 		return $result;
+	}
+
+	public function getRecordFast($id, $key = 'id')
+	{
+		if(empty($id)) return false;
+
+		$records = $this->getRecords([$key => $id], [], 1);
+
+		if(empty($records)) return false;
+
+		return $records[0];
 	}
 
 	public function getRecord($id, $key = 'id')
@@ -263,7 +274,7 @@ class Model {
 	public function getRecords($filters = [], $selection = [], $limit = 100, $skip = 0) {
 
 		$sql = "SELECT ".((empty($selection))?"*":implode(", ",$selection))." FROM ".$this->_table;
-		
+
 		$limitSql = '';
 		if($limit || $skip)	{
 			if((new Config)->type == 'pgsql') {
@@ -278,7 +289,7 @@ class Model {
 
 			$vars = get_class_vars(get_called_class());
 			$whereSql = [];
-			
+
 			foreach ($filters as $key => $value){
 				if(in_array($key, array_keys($vars))) {
 					$whereSql[] = $key." = :".$key." ";

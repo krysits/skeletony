@@ -43,7 +43,7 @@ class Model {
 
 		if(strrpos($namespace, "\\")){
 			$result = @end(explode("\\", $namespace));
-			return $this->_schema . '.' . $result . 's';
+			return ((new Config)->type == 'pgsql' ? $this->_schema . '.' : '') . $result . 's';
 		}
 
 		return false;

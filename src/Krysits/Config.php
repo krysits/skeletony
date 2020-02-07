@@ -56,7 +56,7 @@ class Config {
 			return self::$envVars;
 		}
 
-		$envFile = __DIR__ . '/../../.envm';
+		$envFile = __DIR__ . '/../../../../../.env';
 
 		if(!is_readable($envFile)) {
 			return false;

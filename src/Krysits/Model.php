@@ -135,7 +135,7 @@ class Model {
 		return $this->setId($this->_db->lastInsertId());
 	}
 
-	public function update($data = [], $id)
+	public function update($data = [], $id, $key = 'id')
 	{
 		if(empty($data) && !$this->setId($id)) {
 			return false;
@@ -147,7 +147,7 @@ class Model {
 
 		$fields = $values = [];
 
-		$idField = '';
+		$idField = $key;
 
 		foreach($dbObj as $variable => $value) {
 

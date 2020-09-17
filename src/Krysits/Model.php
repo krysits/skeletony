@@ -47,7 +47,7 @@ class Model {
 		if(strrpos($namespace, "\\")){
             $array = explode("\\", $namespace);
             $result = @end($array);
-			return $this->_schema . '.' . $result . 's';
+			return ((new Config)->type == 'pgsql' ? $this->_schema . '.' : '') . $result . 's';
 		}
 
 		return false;
@@ -144,7 +144,7 @@ class Model {
 		return $this->setId($this->_db->lastInsertId());
 	}
 
-	public function update($data = [], $id): bool
+	public function update($data = [], $id, $key = 'id'): bool
     {
 		if(empty($data) && !$this->setId($id)) {
 			return false;
@@ -156,7 +156,7 @@ class Model {
 
 		$fields = $values = [];
 
-		$idField = '';
+		$idField = $key;
 
 		foreach($dbObj as $variable => $value) {
 

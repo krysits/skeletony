@@ -28,21 +28,25 @@ class Model {
 	}
 
 	// methods
-	public function setId($id) {
-		return $this->_id = intval($id);
+	public function setId($id): int
+    {
+		return $this->_id = (int) $id;
 	}
 
-	protected function setTable($table = '')
-	{
-		return $this->_table = ((new Config)->type == 'pgsql' ? $this->_schema . '.' : '') . $table;
+	protected function setTable($table = ''): string
+    {
+		return $this->_table = ((new Config)->type === 'pgsql' ? $this->_schema . '.' : '') . $table;
 	}
 
 	public function getTableNameByNamespace($namespace = ''){
 
-		if(empty($namespace)) return false;
+		if(empty($namespace)) {
+            return false;
+        }
 
 		if(strrpos($namespace, "\\")){
-			$result = @end(explode("\\", $namespace));
+            $array = explode("\\", $namespace);
+            $result = @end($array);
 			return $this->_schema . '.' . $result . 's';
 		}
 
@@ -51,7 +55,9 @@ class Model {
 
 	public function getIdByAnotherId($val = '', $keyIn = 'id', $keyOut = 'id')
 	{
-		if(empty($val)) return 0;
+		if(empty($val)) {
+            return 0;
+        }
 
 		if($id = $this->getRecords([$keyIn => $val], [$keyOut], 1)[0]->$keyOut) {
 			return $id;
@@ -68,17 +74,18 @@ class Model {
 
 	public function setData($data = [])
 	{
-		if(empty($data)) return false;
+		if(empty($data)) {
+            return false;
+        }
 
 		$this->_out = new stdClass;
 
 		foreach (get_object_vars($this) as $variable => $value) {
 
-			if (isset($data[$variable]) && substr($variable, 0, 1) != '_') {
+			if (isset($data[$variable]) && $variable[0] !== '_') {
 
-				if(!$this->_showId && $variable == 'id') {
+				if(!$this->_showId && $variable === 'id') {
 					// does not expose id to output
-					//$this->$variable = $data[$variable];
 				}
 				else {
 					$this->$variable = $this->_out->$variable = $data[$variable];
@@ -91,7 +98,9 @@ class Model {
 
 	public function save($data = [], $id = 0)
 	{
-		if(empty($data)) return false;
+		if(empty($data)) {
+            return false;
+        }
 
 		if($this->setId($id)) {
 			return $this->update($data, $id);
@@ -135,8 +144,8 @@ class Model {
 		return $this->setId($this->_db->lastInsertId());
 	}
 
-	public function update($data = [], $id)
-	{
+	public function update($data = [], $id): bool
+    {
 		if(empty($data) && !$this->setId($id)) {
 			return false;
 		}
@@ -163,7 +172,7 @@ class Model {
 
 		$sql = "UPDATE ";
 		$sql .= $this->_table." SET " . implode(", ", $fields);
-		$sql .= " WHERE $idField = " . intval($id);
+		$sql .= " WHERE $idField = " .(int) $id;
 
 		$stmt = $this->_db->prepare($sql);
 		$result = $stmt->execute($values);
@@ -175,8 +184,8 @@ class Model {
 		return $result;
 	}
 
-	public function delete($id)
-	{
+	public function delete($id): bool
+    {
 		if(!$this->setId($id)) {
 			return false;
 		}
@@ -205,7 +214,7 @@ class Model {
 
 		$sql = "UPDATE ";
 		$sql .= $this->_table." SET " . implode(", ", $fields);
-		$sql .= " WHERE id = " . intval($id);
+		$sql .= " WHERE id = " .(int) $id;
 
 		$stmt = $this->_db->prepare($sql);
 		$result = $stmt->execute($values);
@@ -225,7 +234,7 @@ class Model {
 
 		$sql = "DELETE FROM ";
 		$sql .= $this->_table;
-		$sql .= " WHERE id = " . intval($id);
+		$sql .= " WHERE id = " .(int) $id;
 
 		$stmt = $this->_db->prepare($sql);
 		$result = $stmt->execute();
@@ -239,45 +248,54 @@ class Model {
 
 	public function getRecordFast($id, $key = 'id')
 	{
-		if(empty($id)) return false;
+		if(empty($id)) {
+            return false;
+        }
 
 		$records = $this->getRecords([$key => $id], [], 1);
 
-		if(empty($records)) return false;
+		if(empty($records)) {
+            return false;
+        }
 
 		return $records[0];
 	}
 
 	public function getRecord($id, $key = 'id')
 	{
-		if(empty($id)) return false;
+		if(empty($id)) {
+            return false;
+        }
 
-		if($key == 'id') {
+		if($key === 'id') {
 			$this->setId($id);
 		}
-		elseif(substr($key,1,2) == 'id' && strlen($id)==32) {}
+		elseif(substr($key,1,2) === 'id' && strlen($id) === 32) {}
 		else {
-			$id = intval($id);
+			$id = (int) $id;
 		}
 
-		$sql = "SELECT * FROM ".$this->_table." WHERE $key =:myid";
+		$sql = "SELECT * FROM ".$this->_table." WHERE {$key} =:id";
 		$stmt = $this->_db->prepare($sql);
-		$stmt->execute(['myid' => $id]);
+		$stmt->execute(['id' => $id]);
 
 		$data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-		if($data) return $this->setData($data);
+		if($data) {
+            return $this->setData($data);
+        }
 
 		return false;
 	}
 
-	public function getRecords($filters = [], $selection = [], $limit = 100, $skip = 0) {
+	public function getRecords($filters = [], $selection = [], $limit = 100, $skip = 0): array
+    {
 
 		$sql = "SELECT ".((empty($selection))?"*":implode(", ",$selection))." FROM ".$this->_table;
 
 		$limitSql = '';
 		if($limit || $skip)	{
-			if((new Config)->type == 'pgsql') {
+			if((new Config)->type === 'pgsql') {
 				$limitSql = " OFFSET ".$skip." LIMIT ".$limit;
 			}
 			else {
@@ -287,11 +305,11 @@ class Model {
 
 		if(!empty($filters)){
 
-			$vars = get_class_vars(get_called_class());
+			$vars = get_class_vars(static::class);
 			$whereSql = [];
 
 			foreach ($filters as $key => $value){
-				if(in_array($key, array_keys($vars))) {
+				if(array_key_exists($key, $vars)) {
 					$whereSql[] = $key." = :".$key." ";
 				}
 			}
@@ -308,8 +326,10 @@ class Model {
 		$sql .= $limitSql;
 		$result = $this->_db->query($sql);
 
-		if($result) return $result->fetchAll(PDO::FETCH_OBJ);
+		if($result) {
+            return $result->fetchAll(PDO::FETCH_OBJ);
+        }
 
 		return [];
 	}
-};
+}

@@ -39,14 +39,16 @@ class Config {
 	}
 
 	// methods
-	public function getDSN()
+	public function getDSN() : string
 	{
 		return $this->type.":host=".$this->host.";port=".$this->port.";dbname=".$this->database;
 	}
 
 	public static function checkIP($ip)
 	{
-		if(filter_var($ip, FILTER_VALIDATE_IP)) return in_array($ip, self::$allowedIPs);
+		if(filter_var($ip, FILTER_VALIDATE_IP)) {
+            return in_array($ip, self::$allowedIPs, true);
+        }
 		return false;
 	}
 
@@ -56,7 +58,7 @@ class Config {
 			return self::$envVars;
 		}
 
-		$envFile = __DIR__ . '/../../.envm';
+		$envFile = __DIR__ . '/../../.env';
 
 		if(!is_readable($envFile)) {
 			return false;
@@ -65,7 +67,9 @@ class Config {
 		$envArr = file($envFile);
 
 		foreach ($envArr as $line) {
-			if(strpos($line,'=') == false) continue;
+			if(strpos($line,'=') === false) {
+                continue;
+            }
 			$tmp = explode('=', $line);
 			$varName = trim($tmp[0]);
 			$varValue = trim($tmp[1]);
@@ -104,13 +108,13 @@ class Config {
 				return '';
 			case 'null':
 			case '(null)':
-				return;
+				return null;
 		}
 
-		if (substr($value, 0, 1) == '"' && substr($value, -1, 1) == '"') {
+		if (strpos($value, '"') === 0 && substr($value, -1, 1) === '"') {
 			return substr($value, 1, -1);
 		}
 
 		return $value;
 	}
-};
+}

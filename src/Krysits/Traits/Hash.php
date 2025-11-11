@@ -22,9 +22,9 @@ trait Hash
 		while ($number > 55) {
 			$key = $number % 56;
 			$number = floor($number / 56) - 1;
-			$out = $codes{$key}.$out;
+			$out = $codes[$key].$out;
 		}
 
-		return $codes{$number}.$out;
+		return $codes[$number].$out;
 	}
 };
